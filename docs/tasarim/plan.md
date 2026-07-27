@@ -23,7 +23,8 @@ Tahmini Süre: 3 gün
 
 
 # Milestone 2
-Bu kısımda hasta ve randevu entity sınıfları tamamlanacak. Bu entity'lere ait Domain, Application, Infrastructure ve WebAPI katmanlarındaki gerekli bileşenler (repository, service, DTO, handler, validator, controller vb.) geliştirilecek.
+Bu kısımda hasta ve randevu yönetimi tamamlanacak. Hastalar sisteme kaydedilebilecek ve iş kurallarına uygun şekilde randevu oluşturulabilecektir.
+Hasta ve randevu entity sınıfları tamamlanacak. Bu entity'lere ait Domain, Application, Infrastructure ve WebAPI katmanlarındaki gerekli bileşenler (repository, service, DTO, handler, validator, controller vb.) geliştirilecek.
 İş kuralları uygulanarak gerekli API'ler oluşturulacak.
 Veritabanı ilişkileri tanımlanacak.
 
