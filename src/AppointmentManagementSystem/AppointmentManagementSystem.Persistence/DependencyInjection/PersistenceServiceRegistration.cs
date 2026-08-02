@@ -19,6 +19,10 @@ public static class PersistenceServiceRegistration
 
         services.AddScoped<IBranchRepository, BranchRepository>();
 
+        services.AddScoped<IDoctorRepository, DoctorRepository>();
+
+        services.AddScoped<IDoctorWorkingHourRepository, DoctorWorkingHourRepository>();
+
         return services;
     }
 }

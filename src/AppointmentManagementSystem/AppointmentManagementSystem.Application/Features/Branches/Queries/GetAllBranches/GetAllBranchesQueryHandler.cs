@@ -1,6 +1,7 @@
 ﻿using AppointmentManagementSystem.Application.Features.Branches.DTOs;
 using AppointmentManagementSystem.Application.Interfaces.Persistence;
 using MediatR;
+using System.Diagnostics.Metrics;
 
 namespace AppointmentManagementSystem.Application.Features.Branches.Queries.GetAllBranches;
 
@@ -27,3 +28,4 @@ public class GetAllBranchesQueryHandler
         }).ToList();
     }
 }
+

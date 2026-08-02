@@ -1,4 +1,7 @@
 ﻿using FluentValidation;
+using System.Runtime.ConstrainedExecution;
+using System.Security.Cryptography;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace AppointmentManagementSystem.Application.Features.Branches.Commands.CreateBranch;
 
@@ -19,3 +22,4 @@ public class CreateBranchCommandValidator : AbstractValidator<CreateBranchComman
             .WithMessage("Branch name cannot exceed 100 characters.");
     }
 }
+
