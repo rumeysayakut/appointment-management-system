@@ -55,3 +55,67 @@ Her milestone için yapılacak geliştirmeleri, oluşturulacak API'leri, tamamla
 **AI Kullanımı:** Dokümanların eksik kalan noktalarını kontrol etmek ve milestone planını gözden geçirmek amacıyla AI'dan yararlandım.
 
 **Reddedilen AI Önerisi:** AI, ilk sürüme raporlama ve gelişmiş istatistik ekranları eklenmesini önerdi. Ancak projenin kapsamını gereksiz şekilde büyüteceği için bu öneriyi kabul etmedim.
+
+## 31.07.2026 - Milestone 1 Geliştirme Süreci
+
+Bugün Milestone 1 kapsamındaki ilk geliştirmeleri tamamladım.
+
+İlk olarak proje yapısını oluşturdum ve Clean Architecture katmanlarını yapılandırdım. Domain, Application, Persistence ve API katmanları arasındaki referans ilişkilerini düzenledim. Ardından Branch (Branş) modülünü geliştirmeye başladım.
+
+Branch entity'sini oluşturduktan sonra Entity Framework Core konfigürasyonunu hazırladım. Repository katmanını geliştirerek branş ekleme, listeleme, güncelleme ve silme işlemleri için gerekli metotları ekledim.
+
+Application katmanında CQRS yapısını kullanarak;
+
+* Command ve Query sınıflarını,
+* Handler sınıflarını,
+* Validator sınıflarını,
+* DTO yapılarını
+
+oluşturdum.
+
+Son olarak API katmanında BranchController geliştirerek oluşturduğum endpointleri Swagger üzerinden test ettim.
+
+Geliştirme sırasında proje referansları, MediatR sürüm uyumsuzluğu, Dependency Injection yapılandırması ve Entity Framework Core migration işlemleriyle ilgili çeşitli teknik sorunlarla karşılaştım. Bu sorunları yapay zekadan yardım alarak hallettim.
+
+Migration oluşturarak veritabanını hazırladım ve Branch modülünün CRUD işlemlerini başarıyla çalıştırdım.
+
+**Aldığım karar:** Projede oluşturacağım tüm entity'ler için aynı klasör yapısını ve aynı CQRS mimarisini kullanarak tutarlı bir geliştirme standardı uygulamaya karar verdim.
+
+**AI Kullanımı:** Katmanlar arasındaki bağımlılıkların düzenlenmesi, MediatR yapılandırması, Dependency Injection ve Entity Framework Core migration süreçlerinde AI'dan teknik destek aldım.
+
+**Reddedilen AI Önerisi:** AI, CRUD işlemlerinde Generic Repository kullanılmasını önerdi. Ancak Repository Pattern'i daha iyi öğrenebilmek ve her entity'nin sorumluluklarını açık şekilde görebilmek amacıyla her entity için ayrı repository geliştirmeyi tercih ettim.
+
+## 01.08.2026 - Milestone 1 devam
+
+Bugün Milestone 1 kapsamındaki geliştirmelere devam etttim.
+
+Doctor (Doktor) modülünü geliştirdim.
+
+Bu kapsamda;
+
+* Doctor entity'sini oluşturdum,
+* Repository katmanını geliştirdim,
+* CQRS yapısını oluşturdum,
+* Command, Query, Handler ve Validator sınıflarını hazırladım,
+* DoctorController geliştirerek API endpointlerini tamamladım.
+
+## 02.08.2026 - Milestone 1'in Tamamlanması
+
+Bugün Milestone 1 kapsamındaki geliştirmeleri tamamladım.
+
+DoctorWorkingHour (Doktor Çalışma Saati) modülünü geliştirdim.
+
+Bu modülde;
+
+* Doktor ile çalışma saatleri arasındaki ilişkiyi tanımladım,
+* Çalışma günü, başlangıç saati ve bitiş saati bilgilerini yöneten entity yapısını oluşturdum,
+* Repository katmanını geliştirdim,
+* CQRS yapısını kurdum,
+* Controller ve API endpointlerini hazırladım.
+
+Validator katmanında başlangıç saatinin bitiş saatinden önce olması gerektiği iş kuralını uyguladım.
+
+Tüm geliştirmeler tamamlandıktan sonra yeni migration oluşturarak veritabanını güncelledim. Swagger üzerinden tüm Branch, Doctor ve DoctorWorkingHour endpointlerini test ederek sistemin beklenen şekilde çalıştığını doğruladım.
+
+Son olarak yapılan geliştirmeleri GitHub reposuna commit edip push ederek Milestone 1'i tamamladım.
+
