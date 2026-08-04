@@ -23,6 +23,8 @@ public static class PersistenceServiceRegistration
 
         services.AddScoped<IDoctorWorkingHourRepository, DoctorWorkingHourRepository>();
 
+        services.AddScoped<IPatientRepository, PatientRepository>();
+
         return services;
     }
 }

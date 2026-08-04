@@ -1,4 +1,5 @@
 ﻿using AppointmentManagementSystem.Domain.Entities;
+using AppointmentManagementSystem.Persistence.Configurations;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppointmentManagementSystem.Persistence.Context;
@@ -16,10 +17,13 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<DoctorWorkingHour> DoctorWorkingHours => Set<DoctorWorkingHour>();
 
+    public DbSet<Patient> Patients { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+        modelBuilder.ApplyConfiguration(new PatientConfiguration());
     }
 }
