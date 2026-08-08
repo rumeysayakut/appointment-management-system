@@ -19,6 +19,8 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Patient> Patients { get; set; }
 
+    public DbSet<Appointment> Appointments => Set<Appointment>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

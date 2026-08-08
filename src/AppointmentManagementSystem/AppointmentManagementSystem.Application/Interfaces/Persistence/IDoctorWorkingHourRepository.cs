@@ -13,4 +13,8 @@ public interface IDoctorWorkingHourRepository
     Task UpdateAsync(DoctorWorkingHour workingHour);
 
     Task DeleteAsync(DoctorWorkingHour workingHour);
+
+    Task<DoctorWorkingHour?> GetByDoctorAndDayAsync(
+        Guid doctorId,
+        DayOfWeek dayOfWeek);
 }

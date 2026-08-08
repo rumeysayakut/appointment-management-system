@@ -48,4 +48,14 @@ public class DoctorWorkingHourRepository : IDoctorWorkingHourRepository
         _context.DoctorWorkingHours.Update(workingHour);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<DoctorWorkingHour?> GetByDoctorAndDayAsync(
+    Guid doctorId,
+    DayOfWeek dayOfWeek)
+    {
+        return await _context.DoctorWorkingHours
+            .FirstOrDefaultAsync(x =>
+                x.DoctorId == doctorId &&
+                x.DayOfWeek == dayOfWeek);
+    }
 }
