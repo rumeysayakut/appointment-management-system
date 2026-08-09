@@ -119,3 +119,88 @@ Tüm geliştirmeler tamamlandıktan sonra yeni migration oluşturarak veritaban�
 
 Son olarak yapılan geliştirmeleri GitHub reposuna commit edip push ederek Milestone 1'i tamamladım.
 
+
+## 03.08.2026 - Milestone 2 Patient(hasta sistemi)
+Bu modülde;
+* Patient entity sınıfı oluşturuldu.
+* Hasta bilgileri için gerekli alanlar tanımlandı.
+* IPatientRepository ve PatientRepository oluşturuldu.
+* Hasta ekleme, güncelleme, silme ve listeleme işlemleri hazırlandı.
+* TC kimlik numarasına göre hasta sorgulama işlemi eklendi.
+* Hasta bilgilerinin veritabanına kaydedilmesi test edildi.
+
+## 04.08.2026
+* Appointment (randevu) entity sınıfı oluşturuldu.
+* Randevunun hasta ve doktor ile ilişkileri tanımlandı.
+* Randevu ekleme, ID'ye göre randevu getirme, Doktorun randevularını listeleme, Hastanın randevularını listeleme işlemleri geliştirildi.
+* Randevunun geçmiş tarihe oluşturulması engellendi.
+* Hastaların en fazla 10 gün sonrasına randevu alabilmesi sağlandı.
+* Doktorun çalışmadığı günlere randevu oluşturulması engellendi.
+* Doktorun çalışma saatleri kontrol edildi.
+* Randevu başlangıç saatlerinin 30 dakikalık aralıklarda olması sağlandı. (bunu sistemde varsaydım)
+* Randevu başlangıç ve bitiş saatleri otomatik hesaplandı.
+Yapay zeka randevu başlangıç ve bitiş saatlerini hastanın seçeceği şekilde yaptı ama bu karmaşaya yol açardı randevu saatlerinin sabit olması gerekiyordu
+bu yüzden doktorun çalışmaya başlama saatinden bitiş saatine kadar yarım saat aralıklarla randevu başlangıç saatleri belirledik hasta bu saatleri seçip randevu oluşturabilir.
+
+
+## 07.08.2026
+Bugün Milestone 2 kapsamında geliştirdiğim Appointment modülünün geliştirmelerine devam ettim ve modülü tamamladım.
+
+Öncelikle randevuların oluşturulması sırasında uygulanması gereken iş kurallarını gözden geçirdim. 
+Randevu oluşturulurken;
+Hasta ve doktorun sistemde kayıtlı olup olmadığı kontrol edildi.
+Geçmiş tarihe randevu alınması engellendi.
+En fazla 10 gün sonrasına randevu alınabilmesi sağlandı.
+Doktorun ilgili gün çalışıp çalışmadığı kontrol edildi.
+Doktorun çalışma saatleri dışında randevu oluşturulması engellendi.
+Randevuların 30 dakikalık sabit zaman aralıklarında başlaması sağlandı.
+Aynı doktorun aynı saatte birden fazla randevusunun oluşturulması engellendi.
+
+Ayrıca AppointmentRepository içerisinde doktor ve hasta bazlı randevu listeleme işlemlerini geliştirdim.
+
+Swagger üzerinden;
+
+Randevu oluşturma,
+Doktorun randevularını listeleme,
+Hastanın randevularını listeleme
+
+işlemlerini test ettim.
+
+Testler sırasında randevu bilgilerinin doğru şekilde veritabanına kaydedildiğini ve ilişkili hasta/doktor bilgilerinin doğru şekilde getirildiğini kontrol ettim.
+
+Aldığım karar: Randevu saatlerinin kullanıcı tarafından tamamen serbest şekilde girilmesi yerine, doktorun çalışma saatleri içerisinde 30 dakikalık sabit aralıklar oluşturulmasına karar verdim. Böylece hem kullanıcı deneyiminin daha anlaşılır olması hem de randevu çakışmalarının daha kolay kontrol edilebilmesi sağlandı.
+
+AI Kullanımı: Randevu oluşturma sırasında uygulanabilecek iş kurallarının kontrol edilmesi, repository sorgularının hazırlanması ve hata ayıklama süreçlerinde AI'dan teknik destek aldım.
+## 08.08.2026
+
+Bugün Milestone 3 kapsamında randevuların yaşam döngüsünü yönetmeye başladım.
+
+İlk olarak bir randevunun yalnızca oluşturulmuş durumda kalmasının yeterli olmadığını fark ederek randevunun mevcut durumunu takip edebilmek için AppointmentStatus enum'unu oluşturdum ve Appointment entity'sine Status alanını ekledim.
+
+Ardından randevu durumlarını değiştirmek için CQRS yapısını kullanarak;
+
+Randevuyu iptal etme,
+Randevuyu tamamlandı olarak işaretleme,
+Hastanın randevuya gelmediğini belirtme
+
+işlemlerini geliştirdim.
+
+Bu işlemler için ayrı command ve handler sınıfları oluşturdum. Özellikle randevu iptalinde, proje gereksinimlerinde belirtilen “randevu yalnızca 2 saat öncesine kadar iptal edilebilir” kuralını uyguladım. Tamamlanmış bir randevunun tekrar iptal edilmemesi gibi durum kontrollerini de ekledim.
+
+Yaptığım değişiklikleri Entity Framework Core migration ile veritabanına aktardım ve Swagger üzerinden farklı randevuların durumlarını değiştirerek işlemlerin doğru çalıştığını kontrol ettim.
+
+## 09.08.2026
+Bugün Milestone 3 kapsamında doktorların izin günlerini sisteme ekledim ve doktor izinlerinin randevu sistemiyle olan ilişkisini kurdum.
+
+İlk olarak doktorun izin tarihlerini temsil etmek için DoctorLeave entity'sini oluşturdum. Doktor, izin başlangıç tarihi ve izin bitiş tarihi arasındaki ilişkiyi modelledim.
+
+Doktor izni oluşturulurken;
+
+Doktorun sistemde bulunması,
+İzin başlangıç tarihinin bitiş tarihinden önce olması,
+Aynı tarih aralığında başka bir iznin bulunmaması
+kontrollerini uyguladım.
+API katmanında DoctorLeaveController oluşturarak doktor izni ekleme ve doktorun izinlerini listeleme işlemlerini Swagger üzerinden kullanılabilir hale getirdim.
+Son olarak doktor izin kontrolünü randevu oluşturma sürecine entegre ettim. CreateAppointmentCommandHandler içerisinde randevu oluşturulmadan önce doktorun seçilen tarih aralığında izinli olup olmadığı kontrol ediliyor. Doktor izinliyse randevu oluşturulması engelleniyor.
+Bu iş kuralını Swagger üzerinden test ettim. İzinli olduğu tarihe doktor için randevu oluşturmaya çalıştığımda sistemin randevuyu oluşturmayarak ilgili hata mesajını döndürdüğünü doğruladım.
+Yapay zeka kodu hazırlarken izin tarihi için .Date kullanmıştı bu da girilen tarih ve saatin saat, dakika ve saniye kısımlarını sıfırlıyordu bu da sistemde açığa sebep oluyordu yapay zekanın bu eksiğini fark edip yapay zekadan da yardım alarak hemen düzelttim.
