@@ -10,17 +10,20 @@ public class CreateAppointmentCommandHandler : IRequestHandler<CreateAppointment
     private readonly IPatientRepository _patientRepository;
     private readonly IDoctorRepository _doctorRepository;
     private readonly IDoctorWorkingHourRepository _doctorWorkingHourRepository;
+    private readonly IDoctorLeaveRepository _doctorLeaveRepository;
 
     public CreateAppointmentCommandHandler(
         IAppointmentRepository appointmentRepository,
         IPatientRepository patientRepository,
         IDoctorRepository doctorRepository,
-        IDoctorWorkingHourRepository doctorWorkingHourRepository)
+        IDoctorWorkingHourRepository doctorWorkingHourRepository,
+        IDoctorLeaveRepository doctorLeaveRepository)
     {
         _appointmentRepository = appointmentRepository;
         _patientRepository = patientRepository;
         _doctorRepository = doctorRepository;
         _doctorWorkingHourRepository = doctorWorkingHourRepository;
+        _doctorLeaveRepository = doctorLeaveRepository;
     }
 
     public async Task<Guid> Handle(
@@ -63,7 +66,20 @@ public class CreateAppointmentCommandHandler : IRequestHandler<CreateAppointment
         {
             throw new Exception("Appointment time is outside the doctor's working hours.");
         }
+        var appointmentStartDateTime = request.StartTime;
+        var appointmentEndDateTime = request.StartTime.AddMinutes(30);
 
+        var isDoctorOnLeave = await _doctorLeaveRepository
+            .IsDoctorOnLeaveAsync(
+                request.DoctorId,
+                appointmentStartDateTime,
+                appointmentEndDateTime);
+
+        if (isDoctorOnLeave)
+        {
+            throw new Exception(
+                "Doctor is on leave during the selected appointment time.");
+        }
         if (appointmentStartTime.Minute != 0 &&
             appointmentStartTime.Minute != 30)
         {

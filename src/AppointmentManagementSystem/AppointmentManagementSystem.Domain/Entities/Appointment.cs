@@ -1,4 +1,6 @@
-﻿namespace AppointmentManagementSystem.Domain.Entities;
+﻿using AppointmentManagementSystem.Domain.Enums;
+
+namespace AppointmentManagementSystem.Domain.Entities;
 
 public class Appointment
 {
@@ -9,6 +11,9 @@ public class Appointment
 
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
+
+    public AppointmentStatus Status { get; set; } = AppointmentStatus.Scheduled;
+
     public Patient Patient { get; set; } = null!;
     public Doctor Doctor { get; set; } = null!;
 }

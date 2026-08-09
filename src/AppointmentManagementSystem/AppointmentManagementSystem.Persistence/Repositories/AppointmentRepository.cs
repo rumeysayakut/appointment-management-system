@@ -57,4 +57,10 @@ public class AppointmentRepository : IAppointmentRepository
                 x.DoctorId == doctorId &&
                 x.StartTime == startTime);
     }
+
+    public async Task UpdateAsync(Appointment appointment)
+    {
+        _context.Appointments.Update(appointment);
+        await _context.SaveChangesAsync();
+    }
 }

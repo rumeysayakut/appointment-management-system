@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AppointmentManagementSystem.Persistence.Context;
 
+
 public class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -18,6 +19,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<DoctorWorkingHour> DoctorWorkingHours => Set<DoctorWorkingHour>();
 
     public DbSet<Patient> Patients { get; set; }
+
+    public DbSet<DoctorLeave> DoctorLeaves => Set<DoctorLeave>();
 
     public DbSet<Appointment> Appointments => Set<Appointment>();
 

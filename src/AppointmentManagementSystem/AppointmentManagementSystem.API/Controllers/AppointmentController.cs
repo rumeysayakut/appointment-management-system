@@ -1,8 +1,11 @@
-﻿using AppointmentManagementSystem.Application.Features.Appointments.Commands.CreateAppointment;
+﻿using AppointmentManagementSystem.Application.Features.Appointments.Commands.CancelAppointment;
+using AppointmentManagementSystem.Application.Features.Appointments.Commands.CreateAppointment;
 using AppointmentManagementSystem.Application.Features.Appointments.Queries.DoctorAppointments;
+using AppointmentManagementSystem.Application.Features.Appointments.Queries.PatientAppointments;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using AppointmentManagementSystem.Application.Features.Appointments.Queries.PatientAppointments;
+using AppointmentManagementSystem.Application.Features.Appointments.Commands.CompleteAppointment;
+using AppointmentManagementSystem.Application.Features.Appointments.Commands.MarkAppointmentAsNoShow;
 
 namespace AppointmentManagementSystem.API.Controllers;
 
@@ -24,6 +27,39 @@ public class AppointmentController : ControllerBase
         var appointmentId = await _mediator.Send(command);
 
         return Ok(appointmentId);
+    }
+
+    [HttpPost("{id}/no-show")]
+    public async Task<IActionResult> MarkAsNoShow(Guid id)
+    {
+        await _mediator.Send(new MarkAppointmentAsNoShowCommand
+        {
+            AppointmentId = id
+        });
+
+        return Ok();
+    }
+
+    [HttpPost("{id}/cancel")]
+    public async Task<IActionResult> Cancel(Guid id)
+    {
+        await _mediator.Send(new CancelAppointmentCommand
+        {
+            AppointmentId = id
+        });
+
+        return Ok();
+    }
+
+    [HttpPost("{id}/complete")]
+    public async Task<IActionResult> Complete(Guid id)
+    {
+        await _mediator.Send(new CompleteAppointmentCommand
+        {
+            AppointmentId = id
+        });
+
+        return Ok();
     }
 
     [HttpGet("doctor/{doctorId}")]

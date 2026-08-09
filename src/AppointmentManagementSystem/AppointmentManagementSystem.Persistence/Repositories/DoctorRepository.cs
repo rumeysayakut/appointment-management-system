@@ -20,6 +20,17 @@ public class DoctorRepository : IDoctorRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task<bool> IsDoctorOnLeaveAsync(
+    Guid doctorId,
+    DateTime startDate,
+    DateTime endDate)
+    {
+        return await _context.DoctorLeaves
+            .AnyAsync(x =>
+                x.DoctorId == doctorId &&
+                x.StartDate <= endDate &&
+                x.EndDate >= startDate);
+    }
     public async Task DeleteAsync(Doctor doctor)
     {
         _context.Doctors.Remove(doctor);
