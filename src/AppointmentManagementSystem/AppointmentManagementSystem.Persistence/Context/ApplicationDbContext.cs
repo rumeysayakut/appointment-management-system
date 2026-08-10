@@ -18,6 +18,8 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<DoctorWorkingHour> DoctorWorkingHours => Set<DoctorWorkingHour>();
 
+    public DbSet<Notification> Notifications { get; set; }
+
     public DbSet<Patient> Patients { get; set; }
 
     public DbSet<DoctorLeave> DoctorLeaves => Set<DoctorLeave>();
@@ -30,5 +32,6 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
         modelBuilder.ApplyConfiguration(new PatientConfiguration());
+        modelBuilder.ApplyConfiguration(new NotificationConfiguration());
     }
 }

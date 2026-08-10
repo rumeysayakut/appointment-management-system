@@ -2,6 +2,7 @@
 using AppointmentManagementSystem.Application.Interfaces.Persistence;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using AppointmentManagementSystem.Application.Features.DoctorLeaves.Commands.UpdateDoctorLeave;
 
 namespace AppointmentManagementSystem.API.Controllers;
 
@@ -27,6 +28,18 @@ public class DoctorLeaveController : ControllerBase
         var id = await _mediator.Send(command);
 
         return Ok(id);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(
+    Guid id,
+    UpdateDoctorLeaveCommand command)
+    {
+        command.Id = id;
+
+        await _mediator.Send(command);
+
+        return Ok();
     }
 
     [HttpGet("doctor/{doctorId}")]

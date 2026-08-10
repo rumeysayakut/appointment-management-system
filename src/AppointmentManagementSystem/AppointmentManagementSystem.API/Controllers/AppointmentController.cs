@@ -29,6 +29,18 @@ public class AppointmentController : ControllerBase
         return Ok(appointmentId);
     }
 
+    [HttpPut("{id}/complete")]
+    public async Task<IActionResult> Complete(Guid id)
+    {
+        await _mediator.Send(
+            new CompleteAppointmentCommand
+            {
+                AppointmentId = id
+            });
+
+        return Ok();
+    }
+
     [HttpPost("{id}/no-show")]
     public async Task<IActionResult> MarkAsNoShow(Guid id)
     {
@@ -40,27 +52,19 @@ public class AppointmentController : ControllerBase
         return Ok();
     }
 
-    [HttpPost("{id}/cancel")]
+    [HttpPut("{id}/cancel")]
     public async Task<IActionResult> Cancel(Guid id)
     {
-        await _mediator.Send(new CancelAppointmentCommand
-        {
-            AppointmentId = id
-        });
+        await _mediator.Send(
+            new CancelAppointmentCommand
+            {
+                AppointmentId = id
+            });
 
         return Ok();
     }
 
-    [HttpPost("{id}/complete")]
-    public async Task<IActionResult> Complete(Guid id)
-    {
-        await _mediator.Send(new CompleteAppointmentCommand
-        {
-            AppointmentId = id
-        });
 
-        return Ok();
-    }
 
     [HttpGet("doctor/{doctorId}")]
     public async Task<IActionResult> GetDoctorAppointments(Guid doctorId)

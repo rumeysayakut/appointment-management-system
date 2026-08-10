@@ -12,6 +12,8 @@ public interface IDoctorLeaveRepository
 
     Task<List<DoctorLeave>> GetByDoctorIdAsync(Guid doctorId);
 
+    Task UpdateAsync(DoctorLeave doctorLeave);
+
     Task<bool> IsDoctorOnLeaveAsync(
         Guid doctorId,
         DateTime startDate,

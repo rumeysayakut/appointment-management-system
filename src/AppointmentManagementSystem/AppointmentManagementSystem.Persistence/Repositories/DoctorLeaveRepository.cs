@@ -27,6 +27,12 @@ public class DoctorLeaveRepository : IDoctorLeaveRepository
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
+    public async Task UpdateAsync(DoctorLeave doctorLeave)
+    {
+        _context.DoctorLeaves.Update(doctorLeave);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task<List<DoctorLeave>> GetByDoctorIdAsync(Guid doctorId)
     {
         return await _context.DoctorLeaves

@@ -11,19 +11,22 @@ public class CreateAppointmentCommandHandler : IRequestHandler<CreateAppointment
     private readonly IDoctorRepository _doctorRepository;
     private readonly IDoctorWorkingHourRepository _doctorWorkingHourRepository;
     private readonly IDoctorLeaveRepository _doctorLeaveRepository;
+    private readonly INotificationRepository _notificationRepository;
 
     public CreateAppointmentCommandHandler(
         IAppointmentRepository appointmentRepository,
         IPatientRepository patientRepository,
         IDoctorRepository doctorRepository,
         IDoctorWorkingHourRepository doctorWorkingHourRepository,
-        IDoctorLeaveRepository doctorLeaveRepository)
+        IDoctorLeaveRepository doctorLeaveRepository,
+        INotificationRepository notificationRepository)
     {
         _appointmentRepository = appointmentRepository;
         _patientRepository = patientRepository;
         _doctorRepository = doctorRepository;
         _doctorWorkingHourRepository = doctorWorkingHourRepository;
         _doctorLeaveRepository = doctorLeaveRepository;
+        _notificationRepository = notificationRepository;
     }
 
     public async Task<Guid> Handle(
@@ -104,6 +107,17 @@ public class CreateAppointmentCommandHandler : IRequestHandler<CreateAppointment
         };
 
         await _appointmentRepository.AddAsync(appointment);
+
+        var notification = new Notification
+        {
+            Id = Guid.NewGuid(),
+            PatientId = appointment.PatientId,
+            AppointmentId = appointment.Id,
+            Message = $"Randevunuz {appointment.StartTime:dd.MM.yyyy HH:mm} tarihinde oluşturuldu.",
+            IsRead = false
+        };
+
+        await _notificationRepository.AddAsync(notification);
 
         return appointment.Id;
     }

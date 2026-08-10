@@ -4,7 +4,8 @@ using MediatR;
 
 namespace AppointmentManagementSystem.Application.Features.Appointments.Commands.CancelAppointment;
 
-public class CancelAppointmentCommandHandler : IRequestHandler<CancelAppointmentCommand, Unit>
+public class CancelAppointmentCommandHandler
+    : IRequestHandler<CancelAppointmentCommand, Unit>
 {
     private readonly IAppointmentRepository _appointmentRepository;
 
@@ -18,25 +19,26 @@ public class CancelAppointmentCommandHandler : IRequestHandler<CancelAppointment
         CancelAppointmentCommand request,
         CancellationToken cancellationToken)
     {
-        var appointment = await _appointmentRepository.GetByIdAsync(request.AppointmentId);
+        var appointment = await _appointmentRepository
+            .GetByIdAsync(request.AppointmentId);
 
         if (appointment is null)
             throw new Exception("Appointment not found.");
 
         if (appointment.Status == AppointmentStatus.Completed)
-            throw new Exception("Completed appointment cannot be cancelled.");
+        {
+            throw new Exception(
+                "Completed appointment cannot be cancelled.");
+        }
 
-        if (appointment.Status == AppointmentStatus.NoShow)
-            throw new Exception("No-show appointment cannot be cancelled.");
+        var timeUntilAppointment =
+            appointment.StartTime - DateTime.Now;
 
-        if (appointment.Status == AppointmentStatus.CancelledByPatient ||
-            appointment.Status == AppointmentStatus.CancelledByDoctor)
-            throw new Exception("Appointment is already cancelled.");
-
-        var cancellationLimit = appointment.StartTime.AddHours(-2);
-
-        if (DateTime.Now > cancellationLimit)
-            throw new Exception("Appointment can only be cancelled at least 2 hours in advance.");
+        if (timeUntilAppointment.TotalHours < 2)
+        {
+            throw new Exception(
+                "Appointment can only be cancelled at least 2 hours in advance.");
+        }
 
         appointment.Status = AppointmentStatus.CancelledByPatient;
 
