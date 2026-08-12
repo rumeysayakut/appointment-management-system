@@ -8,6 +8,8 @@ public interface IDoctorRepository
 
     Task<Doctor?> GetByIdAsync(Guid id);
 
+    Task<List<Doctor>> GetByBranchIdAsync(Guid branchId);
+
     Task AddAsync(Doctor doctor);
 
     Task UpdateAsync(Doctor doctor);

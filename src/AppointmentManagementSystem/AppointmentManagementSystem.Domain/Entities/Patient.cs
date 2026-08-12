@@ -13,4 +13,6 @@ public class Patient : BaseEntity
     public string Phone { get; set; } = string.Empty;
 
     public DateOnly BirthDate { get; set; }
+
+    public DateTime? ExtraAppointmentUntil { get; set; }
 }

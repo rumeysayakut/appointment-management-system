@@ -1,10 +1,13 @@
-﻿using AppointmentManagementSystem.Application.Interfaces.Persistence;
+﻿using AppointmentManagementSystem.Application.Common.Settings;
+using AppointmentManagementSystem.Application.Interfaces.Persistence;
 using AppointmentManagementSystem.Domain.Entities;
 using MediatR;
+using Microsoft.Extensions.Options;
 
 namespace AppointmentManagementSystem.Application.Features.Appointments.Commands.CreateAppointment;
 
-public class CreateAppointmentCommandHandler : IRequestHandler<CreateAppointmentCommand, Guid>
+public class CreateAppointmentCommandHandler
+    : IRequestHandler<CreateAppointmentCommand, Guid>
 {
     private readonly IAppointmentRepository _appointmentRepository;
     private readonly IPatientRepository _patientRepository;
@@ -12,6 +15,7 @@ public class CreateAppointmentCommandHandler : IRequestHandler<CreateAppointment
     private readonly IDoctorWorkingHourRepository _doctorWorkingHourRepository;
     private readonly IDoctorLeaveRepository _doctorLeaveRepository;
     private readonly INotificationRepository _notificationRepository;
+    private readonly AppointmentSettings _appointmentSettings;
 
     public CreateAppointmentCommandHandler(
         IAppointmentRepository appointmentRepository,
@@ -19,7 +23,8 @@ public class CreateAppointmentCommandHandler : IRequestHandler<CreateAppointment
         IDoctorRepository doctorRepository,
         IDoctorWorkingHourRepository doctorWorkingHourRepository,
         IDoctorLeaveRepository doctorLeaveRepository,
-        INotificationRepository notificationRepository)
+        INotificationRepository notificationRepository,
+        IOptions<AppointmentSettings> appointmentSettings)
     {
         _appointmentRepository = appointmentRepository;
         _patientRepository = patientRepository;
@@ -27,75 +32,113 @@ public class CreateAppointmentCommandHandler : IRequestHandler<CreateAppointment
         _doctorWorkingHourRepository = doctorWorkingHourRepository;
         _doctorLeaveRepository = doctorLeaveRepository;
         _notificationRepository = notificationRepository;
+        _appointmentSettings = appointmentSettings.Value;
     }
 
     public async Task<Guid> Handle(
         CreateAppointmentCommand request,
         CancellationToken cancellationToken)
     {
-        var patient = await _patientRepository.GetByIdAsync(request.PatientId);
+        var patient =
+            await _patientRepository.GetByIdAsync(request.PatientId);
 
         if (patient is null)
             throw new Exception("Patient not found.");
 
-        var doctor = await _doctorRepository.GetByIdAsync(request.DoctorId);
+        var doctor =
+            await _doctorRepository.GetByIdAsync(request.DoctorId);
 
         if (doctor is null)
             throw new Exception("Doctor not found.");
 
+        var appointmentDuration =
+            _appointmentSettings.DurationInMinutes;
+
         var appointmentDate = request.StartTime.Date;
         var today = DateTime.Today;
+
         var lastAvailableDate = today.AddDays(10);
 
+        if (patient.ExtraAppointmentUntil.HasValue &&
+            patient.ExtraAppointmentUntil.Value.Date > lastAvailableDate)
+        {
+            lastAvailableDate =
+                patient.ExtraAppointmentUntil.Value.Date;
+        }
+
         if (appointmentDate < today)
-            throw new Exception("Appointment cannot be created for a past date.");
+        {
+            throw new Exception(
+                "Appointment cannot be created for a past date.");
+        }
 
         if (appointmentDate > lastAvailableDate)
-            throw new Exception("Appointment can only be created up to 10 days in advance.");
+        {
+            throw new Exception(
+                $"Appointment can only be created up to {lastAvailableDate:dd.MM.yyyy}.");
+        }
 
         var dayOfWeek = request.StartTime.DayOfWeek;
 
-        var workingHour = await _doctorWorkingHourRepository
-            .GetByDoctorAndDayAsync(request.DoctorId, dayOfWeek);
+        var workingHour =
+            await _doctorWorkingHourRepository
+                .GetByDoctorAndDayAsync(
+                    request.DoctorId,
+                    dayOfWeek);
 
         if (workingHour is null)
-            throw new Exception("Doctor does not work on the selected day.");
+            throw new Exception(
+                "Doctor does not work on the selected day.");
 
-        var appointmentStartTime = TimeOnly.FromDateTime(request.StartTime);
-        var appointmentEndTime = appointmentStartTime.AddMinutes(30);
+        var appointmentStartTime =
+            TimeOnly.FromDateTime(request.StartTime);
+
+        var appointmentEndTime =
+            appointmentStartTime.AddMinutes(appointmentDuration);
 
         if (appointmentStartTime < workingHour.StartTime ||
             appointmentEndTime > workingHour.EndTime)
         {
-            throw new Exception("Appointment time is outside the doctor's working hours.");
+            throw new Exception(
+                "Appointment time is outside the doctor's working hours.");
         }
-        var appointmentStartDateTime = request.StartTime;
-        var appointmentEndDateTime = request.StartTime.AddMinutes(30);
 
-        var isDoctorOnLeave = await _doctorLeaveRepository
-            .IsDoctorOnLeaveAsync(
-                request.DoctorId,
-                appointmentStartDateTime,
-                appointmentEndDateTime);
+        var appointmentStartDateTime = request.StartTime;
+
+        var appointmentEndDateTime =
+            request.StartTime.AddMinutes(appointmentDuration);
+
+        var isDoctorOnLeave =
+            await _doctorLeaveRepository
+                .IsDoctorOnLeaveAsync(
+                    request.DoctorId,
+                    appointmentStartDateTime,
+                    appointmentEndDateTime);
 
         if (isDoctorOnLeave)
         {
             throw new Exception(
                 "Doctor is on leave during the selected appointment time.");
         }
-        if (appointmentStartTime.Minute != 0 &&
-            appointmentStartTime.Minute != 30)
+
+        var minutesFromWorkingHourStart =
+            (appointmentStartTime - workingHour.StartTime).TotalMinutes;
+
+        if (minutesFromWorkingHourStart % appointmentDuration != 0)
         {
-            throw new Exception("Appointment must start at a 30-minute interval.");
+            throw new Exception(
+                $"Appointment must start at a valid {appointmentDuration}-minute interval.");
         }
 
-        var existingAppointment = await _appointmentRepository
-            .GetByDoctorAndStartTimeAsync(
-                request.DoctorId,
-                request.StartTime);
+        var existingAppointment =
+            await _appointmentRepository
+                .GetByDoctorAndStartTimeAsync(
+                    request.DoctorId,
+                    request.StartTime);
 
         if (existingAppointment is not null)
-            throw new Exception("The selected appointment time is already booked.");
+            throw new Exception(
+                "The selected appointment time is already booked.");
 
         var appointment = new Appointment
         {
@@ -103,7 +146,7 @@ public class CreateAppointmentCommandHandler : IRequestHandler<CreateAppointment
             PatientId = request.PatientId,
             DoctorId = request.DoctorId,
             StartTime = request.StartTime,
-            EndTime = request.StartTime.AddMinutes(30)
+            EndTime = request.StartTime.AddMinutes(appointmentDuration)
         };
 
         await _appointmentRepository.AddAsync(appointment);
@@ -113,7 +156,8 @@ public class CreateAppointmentCommandHandler : IRequestHandler<CreateAppointment
             Id = Guid.NewGuid(),
             PatientId = appointment.PatientId,
             AppointmentId = appointment.Id,
-            Message = $"Randevunuz {appointment.StartTime:dd.MM.yyyy HH:mm} tarihinde oluşturuldu.",
+            Message =
+                $"Randevunuz {appointment.StartTime:dd.MM.yyyy HH:mm} tarihinde oluşturuldu.",
             IsRead = false
         };
 

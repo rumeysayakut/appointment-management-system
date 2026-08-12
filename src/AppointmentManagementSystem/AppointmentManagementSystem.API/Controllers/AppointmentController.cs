@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using AppointmentManagementSystem.Application.Features.Appointments.Commands.CompleteAppointment;
 using AppointmentManagementSystem.Application.Features.Appointments.Commands.MarkAppointmentAsNoShow;
+using AppointmentManagementSystem.Application.Features.Appointments.Queries.GetAvailableAppointmentSlots;
 
 namespace AppointmentManagementSystem.API.Controllers;
 
@@ -90,5 +91,21 @@ public class AppointmentController : ControllerBase
         var appointments = await _mediator.Send(query);
 
         return Ok(appointments);
+    }
+
+    [HttpGet("available-slots")]
+    public async Task<IActionResult> GetAvailableAppointmentSlots(
+    Guid branchId,
+    DateTime date)
+    {
+        var query = new GetAvailableAppointmentSlotsQuery
+        {
+            BranchId = branchId,
+            Date = date
+        };
+
+        var availableSlots = await _mediator.Send(query);
+
+        return Ok(availableSlots);
     }
 }

@@ -20,6 +20,13 @@ public class DoctorRepository : IDoctorRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task<List<Doctor>> GetByBranchIdAsync(Guid branchId)
+    {
+        return await _context.Doctors
+            .Where(x => x.BranchId == branchId)
+            .ToListAsync();
+    }
+
     public async Task<bool> IsDoctorOnLeaveAsync(
     Guid doctorId,
     DateTime startDate,

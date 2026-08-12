@@ -32,6 +32,9 @@ public class PatientConfiguration : IEntityTypeConfiguration<Patient>
         builder.Property(x => x.BirthDate)
             .IsRequired();
 
+        builder.Property(x => x.ExtraAppointmentUntil)
+            .IsRequired(false);
+
         builder.Property(x => x.CreatedDate)
             .IsRequired();
     }
