@@ -4,7 +4,8 @@ using MediatR;
 
 namespace AppointmentManagementSystem.Application.Features.Appointments.Commands.CompleteAppointment;
 
-public class CompleteAppointmentCommandHandler : IRequestHandler<CompleteAppointmentCommand, Unit>
+public class CompleteAppointmentCommandHandler
+    : IRequestHandler<CompleteAppointmentCommand, Unit>
 {
     private readonly IAppointmentRepository _appointmentRepository;
 
@@ -18,7 +19,8 @@ public class CompleteAppointmentCommandHandler : IRequestHandler<CompleteAppoint
         CompleteAppointmentCommand request,
         CancellationToken cancellationToken)
     {
-        var appointment = await _appointmentRepository.GetByIdAsync(request.AppointmentId);
+        var appointment =
+            await _appointmentRepository.GetByIdAsync(request.AppointmentId);
 
         if (appointment is null)
             throw new Exception("Appointment not found.");

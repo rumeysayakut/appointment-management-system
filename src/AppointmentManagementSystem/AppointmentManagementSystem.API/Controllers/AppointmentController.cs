@@ -93,14 +93,44 @@ public class AppointmentController : ControllerBase
         return Ok(appointments);
     }
 
+    
+
+    [HttpGet("patient/{patientId}/past")]
+    public async Task<IActionResult> GetPatientPastAppointments(Guid patientId)
+    {
+        var query = new GetPatientPastAppointmentsQuery
+        {
+            PatientId = patientId
+        };
+
+        var appointments = await _mediator.Send(query);
+
+        return Ok(appointments);
+    }
+
+    [HttpGet("patient/{patientId}/upcoming")]
+    public async Task<IActionResult> GetPatientUpcomingAppointments(Guid patientId)
+    {
+        var query = new GetPatientUpcomingAppointmentsQuery
+        {
+            PatientId = patientId
+        };
+
+        var appointments = await _mediator.Send(query);
+
+        return Ok(appointments);
+    }
+
     [HttpGet("available-slots")]
     public async Task<IActionResult> GetAvailableAppointmentSlots(
     Guid branchId,
+    Guid patientId,
     DateTime date)
     {
         var query = new GetAvailableAppointmentSlotsQuery
         {
             BranchId = branchId,
+            PatientId = patientId,
             Date = date
         };
 

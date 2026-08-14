@@ -27,6 +27,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\AppointmentManagementSystem.Application\AppointmentManagementSystem.Application.csproj" />
+		<ProjectReference Include="..\AppointmentManagementSystem.Infrastructure\AppointmentManagementSystem.Infrastructure.csproj" />
 		<ProjectReference Include="..\AppointmentManagementSystem.Persistence\AppointmentManagementSystem.Persistence.csproj" />
 	</ItemGroup>
 

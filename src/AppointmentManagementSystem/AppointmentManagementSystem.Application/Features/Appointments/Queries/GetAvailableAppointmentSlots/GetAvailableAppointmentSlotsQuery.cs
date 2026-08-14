@@ -7,5 +7,9 @@ public class GetAvailableAppointmentSlotsQuery
 {
     public Guid BranchId { get; set; }
 
+    public Guid PatientId { get; set; }
+
+    public bool HasPriorityRequest { get; set; }
+
     public DateTime Date { get; set; }
 }

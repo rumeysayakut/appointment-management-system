@@ -2,6 +2,7 @@
 using AppointmentManagementSystem.Domain.Entities;
 using AppointmentManagementSystem.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
+using AppointmentManagementSystem.Domain.Enums;
 
 namespace AppointmentManagementSystem.Persistence.Repositories;
 
@@ -42,25 +43,48 @@ public class AppointmentRepository : IAppointmentRepository
     {
         return await _context.Appointments
             .AsNoTracking()
+            .Include(x => x.Patient)
             .Include(x => x.Doctor)
+                .ThenInclude(d => d.Branch)
             .Where(x => x.PatientId == patientId)
             .OrderByDescending(x => x.StartTime)
             .ToListAsync();
     }
 
     public async Task<Appointment?> GetByDoctorAndStartTimeAsync(
-    Guid doctorId,
-    DateTime startTime)
+     Guid doctorId,
+     DateTime startTime)
     {
         return await _context.Appointments
             .FirstOrDefaultAsync(x =>
                 x.DoctorId == doctorId &&
-                x.StartTime == startTime);
+                x.StartTime == startTime &&
+                x.Status != AppointmentStatus.CancelledByPatient &&
+                x.Status != AppointmentStatus.CancelledByDoctor);
     }
 
     public async Task UpdateAsync(Appointment appointment)
     {
         _context.Appointments.Update(appointment);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<int> GetPriorityWindowAppointmentCountAsync(
+    Guid doctorId,
+    DateTime appointmentDate,
+    DateTime priorityWindowStart,
+    DateTime normalOpenTime)
+    {
+        var dayStart = appointmentDate.Date;
+        var dayEnd = dayStart.AddDays(1);
+
+        return await _context.Appointments.CountAsync(x =>
+            x.DoctorId == doctorId &&
+            x.StartTime >= dayStart &&
+            x.StartTime < dayEnd &&
+            x.CreatedAt >= priorityWindowStart &&
+            x.CreatedAt < normalOpenTime &&
+            x.Status != AppointmentStatus.CancelledByPatient &&
+            x.Status != AppointmentStatus.CancelledByDoctor);
     }
 }

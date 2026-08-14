@@ -12,6 +12,8 @@ public class Appointment
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
 
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
+
     public AppointmentStatus Status { get; set; } = AppointmentStatus.Scheduled;
 
     public Patient Patient { get; set; } = null!;
