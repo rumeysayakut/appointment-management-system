@@ -1,12 +1,13 @@
 ﻿using AppointmentManagementSystem.Application.Features.Appointments.Commands.CancelAppointment;
+using AppointmentManagementSystem.Application.Features.Appointments.Commands.CompleteAppointment;
 using AppointmentManagementSystem.Application.Features.Appointments.Commands.CreateAppointment;
+using AppointmentManagementSystem.Application.Features.Appointments.Commands.MarkAppointmentAsNoShow;
 using AppointmentManagementSystem.Application.Features.Appointments.Queries.DoctorAppointments;
+using AppointmentManagementSystem.Application.Features.Appointments.Queries.GetAvailableAppointmentSlots;
+using AppointmentManagementSystem.Application.Features.Appointments.Queries.GetPatientAppointmentHistory;
 using AppointmentManagementSystem.Application.Features.Appointments.Queries.PatientAppointments;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using AppointmentManagementSystem.Application.Features.Appointments.Commands.CompleteAppointment;
-using AppointmentManagementSystem.Application.Features.Appointments.Commands.MarkAppointmentAsNoShow;
-using AppointmentManagementSystem.Application.Features.Appointments.Queries.GetAvailableAppointmentSlots;
 
 namespace AppointmentManagementSystem.API.Controllers;
 
@@ -137,5 +138,18 @@ public class AppointmentController : ControllerBase
         var availableSlots = await _mediator.Send(query);
 
         return Ok(availableSlots);
+    }
+
+    [HttpGet("history/{identityNumber}")]
+    public async Task<IActionResult> GetPatientAppointmentHistory(
+    string identityNumber)
+    {
+        var result = await _mediator.Send(
+            new GetPatientAppointmentHistoryQuery
+            {
+                IdentityNumber = identityNumber
+            });
+
+        return Ok(result);
     }
 }

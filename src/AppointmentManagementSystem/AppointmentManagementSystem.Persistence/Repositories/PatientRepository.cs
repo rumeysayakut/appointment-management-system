@@ -40,15 +40,18 @@ public class PatientRepository : IPatientRepository
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<Patient?> GetByIdentityNumberAsync(string identityNumber)
-    {
-        return await _context.Patients
-            .FirstOrDefaultAsync(x => x.IdentityNumber == identityNumber);
-    }
-
+   
     public async Task UpdateAsync(Patient patient)
     {
         _context.Patients.Update(patient);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<Patient?> GetByIdentityNumberAsync(
+    string identityNumber)
+    {
+        return await _context.Patients
+            .FirstOrDefaultAsync(x =>
+                x.IdentityNumber == identityNumber);
     }
 }

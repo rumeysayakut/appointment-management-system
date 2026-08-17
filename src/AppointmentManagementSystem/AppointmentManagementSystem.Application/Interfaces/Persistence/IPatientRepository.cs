@@ -11,7 +11,6 @@ public interface IPatientRepository
     Task DeleteAsync(Patient patient);
 
     Task<Patient?> GetByIdAsync(Guid id);
-
     Task<List<Patient>> GetAllAsync();
 
     Task<Patient?> GetByIdentityNumberAsync(string identityNumber);

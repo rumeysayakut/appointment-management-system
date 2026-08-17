@@ -64,17 +64,13 @@ public class GetAvailableAppointmentSlotsQueryHandler
 
         var now = DateTime.Now;
 
-        // Normal erişim: Randevu tarihinden 10 gün önce saat 00:00
         var normalOpenTime = dayStart.AddDays(-10);
 
-        // Öncelikli erişim: 6 saat önce
         var priorityOpenTime = normalOpenTime.AddHours(-6);
-
-        // Henüz öncelikli erişim bile başlamadıysa kimse slot göremez.
+      
         if (now < priorityOpenTime)
             return availableSlots;
 
-        // Erken erişim dönemindeysek normal hasta göremez.
         var isPriorityWindow =
             now >= priorityOpenTime &&
             now < normalOpenTime;

@@ -18,7 +18,7 @@ public class CreateAppointmentCommandHandler
     private readonly INotificationRepository _notificationRepository;
     private readonly IPatientPriorityService _patientPriorityService;
     private readonly AppointmentSettings _appointmentSettings;
-
+    private readonly IEmailService _emailService;
     public CreateAppointmentCommandHandler(
         IAppointmentRepository appointmentRepository,
         IPatientRepository patientRepository,
@@ -27,7 +27,8 @@ public class CreateAppointmentCommandHandler
         IDoctorLeaveRepository doctorLeaveRepository,
         INotificationRepository notificationRepository,
         IPatientPriorityService patientPriorityService,
-        IOptions<AppointmentSettings> appointmentSettings)
+        IOptions<AppointmentSettings> appointmentSettings,
+        IEmailService emailService)
     {
         _appointmentRepository = appointmentRepository;
         _patientRepository = patientRepository;
@@ -37,6 +38,7 @@ public class CreateAppointmentCommandHandler
         _notificationRepository = notificationRepository;
         _patientPriorityService = patientPriorityService;
         _appointmentSettings = appointmentSettings.Value;
+        _emailService = emailService;
     }
 
     public async Task<Guid> Handle(
@@ -205,12 +207,30 @@ public class CreateAppointmentCommandHandler
             PatientId = appointment.PatientId,
             AppointmentId = appointment.Id,
             Message =
-                $"Randevunuz {appointment.StartTime:dd.MM.yyyy HH:mm} tarihinde oluşturuldu.",
+          $"Randevunuz {appointment.StartTime:dd.MM.yyyy HH:mm} tarihinde oluşturuldu.",
             IsRead = false
         };
 
+        // Eski bildirim sistemi (bunu koruyoruz)
         await _notificationRepository.AddAsync(notification);
+
+        // Yeni mail sistemi
+        if (!string.IsNullOrWhiteSpace(patient.Email))
+        {
+            await _emailService.SendAsync(
+                patient.Email,
+                "Randevu Onayı",
+                $"""
+        <h2>Randevunuz Başarıyla Oluşturuldu</h2>
+
+        <p>Merhaba {patient.FirstName} {patient.LastName},</p>
+
+        <p>Randevu Tarihi: <strong>{appointment.StartTime:dd.MM.yyyy HH:mm}</strong></p>
+
+        <p>Sağlıklı günler dileriz.</p>
+        """);
+        }
 
         return appointment.Id;
     }
-}
+  }

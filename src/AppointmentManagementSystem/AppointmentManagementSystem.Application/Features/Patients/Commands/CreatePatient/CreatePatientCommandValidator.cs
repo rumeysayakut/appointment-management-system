@@ -24,5 +24,9 @@ public class CreatePatientCommandValidator : AbstractValidator<CreatePatientComm
 
         RuleFor(x => x.BirthDate)
             .NotEmpty();
+
+        RuleFor(x => x.Email)
+    .NotEmpty().WithMessage("Email zorunludur.")
+    .EmailAddress().WithMessage("Geçerli bir email adresi giriniz.");
     }
 }

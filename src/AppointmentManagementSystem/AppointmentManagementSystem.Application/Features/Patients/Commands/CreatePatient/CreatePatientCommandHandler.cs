@@ -26,6 +26,7 @@ public class CreatePatientCommandHandler : IRequestHandler<CreatePatientCommand,
             LastName = request.LastName,
             IdentityNumber = request.IdentityNumber,
             Phone = request.Phone,
+            Email = request.Email,
             BirthDate = request.BirthDate
         };
 
